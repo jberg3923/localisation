@@ -1,0 +1,14 @@
+{
+  "name": "flow-localise",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node --test dist/test/*.test.js",
+    "localise": "node dist/src/cli.js"
+  },
+  "dependencies": { "playwright": "1.64.1", "zod": "4.1.12" },
+  "devDependencies": { "@types/node": "24.10.0", "typescript": "5.9.3" }
+}

@@ -1,0 +1,17 @@
+{
+  "title": "Find and open a resume template",
+  "referenceLocale": "en",
+  "locale": "es-AR",
+  "startUrl": "https://www.canva.com/",
+  "accountContext": "CONFIGURE dedicated demo account and workspace name",
+  "uiLanguage": "CONFIGURE exact html lang observed after setting account language",
+  "startReady": { "role": "heading", "name": "CONFIGURE clean start heading" },
+  "query": "CONFIGURE approved local resume query",
+  "choice": { "nativeTitle": "CONFIGURE exact accessible template name", "href": "https://www.canva.com/CONFIGURE" },
+  "steps": [
+    { "id": "templates", "action": "click", "target": { "role": "link", "name": "CONFIGURE Templates label" }, "after": { "role": "searchbox", "name": "CONFIGURE search accessible name" }, "pauseMs": 1000 },
+    { "id": "search", "action": "search", "target": { "role": "searchbox", "name": "CONFIGURE search accessible name" }, "after": { "role": "heading", "name": "CONFIGURE results heading" }, "pauseMs": 1000 },
+    { "id": "choose", "action": "click", "target": { "role": "link", "name": "CONFIGURE exact accessible template name" }, "after": { "role": "button", "name": "CONFIGURE open editor label" }, "pauseMs": 1000 },
+    { "id": "editor", "action": "click", "target": { "role": "button", "name": "CONFIGURE open editor label" }, "after": { "role": "button", "name": "CONFIGURE unique editor control" }, "pauseMs": 1000 }
+  ]
+}
