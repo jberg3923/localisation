@@ -1,23 +1,23 @@
-# Phase 0 evidence
+# Phase 0 evidence — English test preparation
 
-This repository contains an initial runner, not proof of a completed Canva workflow.
+The user approved **Red Black Bold Graphic Designer Resume** for the first English test. Uploaded inspection files establish an English (Australia) Canva home page, sidebar Templates link, template search, preview-button results and a separate editor tab. The editor inspection exposes that design title, editable title field and Canvas content. The earlier preview was a different template; its ID is not reused. The selected template's ID must be discovered and approved live during preparation.
 
-Verified in the cloud development environment:
+## Verified here
 
-- Locked Node dependency installation and TypeScript build.
-- FFmpeg/ffprobe availability.
-- Rejection of unconfigured recipes, invalid timing bounds, and recipe hashes changing when queries change.
-- A synthetic source was encoded and decoded as silent H.264/yuv420p, 1920 × 1080 at 25 fps with valid step timings. All four non-browser tests passed. This does not establish browser capture quality.
+- Locked dependencies, TypeScript build and FFmpeg/ffprobe availability.
+- Ten automated tests pass with managed system Chromium 154.0.8037.57 and Playwright 1.64.1.
+- A browser fixture traverses home → Templates → search → preview → new editor tab. Its complete capture is encoded and decoded as silent H.264/yuv420p at 1920 × 1080, 25 fps. Delivered-frame checks verify home, results, preview and editor are all represented, with four bounded step timings.
+- Missing templates stop without opening an editor. A changed template ID produces a failed attempt and no editor tab. Duplicate targets, preparation invalidation, invalid timings and foreign template destinations are rejected. Tracking query changes do not change template identity.
+- Three focused tab-inspector tests pass.
 
-Blocked in this environment:
+These fixtures simulate page structure and are not live Canva runs. The browser binary is the managed machine's existing Debian Chromium; the pinned Playwright browser download remains denied by the cloud network policy. No TLS or artifact verification was disabled.
 
-- Playwright Chromium download returned HTTP 403 `Domain forbidden` for `cdn.playwright.dev`.
-- Consequently the real browser fixture (including duplicate-target rejection, identity after reordering, and screencast output) cannot execute yet. It is not a passing test.
-- The draft adds that download domain. Saving the draft does not apply the policy; review and save environment settings, then retry installation before publication. Further download destinations may be reported by Playwright after access is restored.
+## Still required on the Mac
 
-Not run:
+- Execute the English preparation and actual take against the live account. Inspect the resulting footage, reset behaviour, tab transition, endpoint identity and text readability.
+- Verify the pinned browser and headed capture on macOS. The user's manual browser route reached an editable resume; that does not yet prove the automated route or recording.
+- Review smoothness, frame gaps, cursor treatment and timing precision. The adapter captures page content rather than browser chrome. It switches at the first available popup frames and preserves elapsed time; real visual transition quality is not established by the fixture.
+- Repeat clean starts and compare headed/headless behaviour if headless execution is desired.
+- Inspect and approve Spanish/Thai controls, account language mappings, local queries, template identities and Thai glyphs. Fluent and creative reviews remain separate from media checks.
 
-- A live Canva preparation or take, on either target locale.
-- Mac installation or headed browser checks, repeat resets, tab transitions, account locale mapping, Thai font rendering, readability, cursor acceptance, or mode comparison.
-
-No Canva selector, template identity, local query or review decision has been invented. The example intentionally fails validation until real evidence replaces its placeholders. No clips are approved, no GitHub push has occurred, and no environment publication is claimed. The current same-page adapter must be extended if the observed Canva route uses modal dialogs or a new editor tab. Do not hide these limitations by changing the lesson route.
+No actual Canva clip is approved. No production pilot metrics, language review, fresh-task restoration or environment publication are claimed. The dashboard remains deferred.

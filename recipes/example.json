@@ -7,11 +7,11 @@
   "uiLanguage": "CONFIGURE exact html lang observed after setting account language",
   "startReady": { "role": "heading", "name": "CONFIGURE clean start heading" },
   "query": "CONFIGURE approved local resume query",
-  "choice": { "nativeTitle": "CONFIGURE exact accessible template name", "href": "https://www.canva.com/CONFIGURE" },
+  "choice": { "nativeTitle": "CONFIGURE exact template title", "previewHeading": "CONFIGURE exact preview heading", "editorLink": "CONFIGURE exact customise link accessible name" },
   "steps": [
     { "id": "templates", "action": "click", "target": { "role": "link", "name": "CONFIGURE Templates label" }, "after": { "role": "searchbox", "name": "CONFIGURE search accessible name" }, "pauseMs": 1000 },
     { "id": "search", "action": "search", "target": { "role": "searchbox", "name": "CONFIGURE search accessible name" }, "after": { "role": "heading", "name": "CONFIGURE results heading" }, "pauseMs": 1000 },
-    { "id": "choose", "action": "click", "target": { "role": "link", "name": "CONFIGURE exact accessible template name" }, "after": { "role": "button", "name": "CONFIGURE open editor label" }, "pauseMs": 1000 },
-    { "id": "editor", "action": "click", "target": { "role": "button", "name": "CONFIGURE open editor label" }, "after": { "role": "button", "name": "CONFIGURE unique editor control" }, "pauseMs": 1000 }
+    { "id": "choose", "action": "click", "target": { "role": "button", "name": "CONFIGURE exact accessible template preview name" }, "after": { "role": "heading", "name": "CONFIGURE exact preview heading", "within": { "role": "dialog" } }, "pauseMs": 1000 },
+    { "id": "editor", "action": "click", "target": { "role": "link", "name": "CONFIGURE exact customise link accessible name", "within": { "role": "dialog" } }, "after": { "role": "heading", "name": "CONFIGURE unique editor heading" }, "pauseMs": 1000 }
   ]
 }

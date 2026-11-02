@@ -1,28 +1,47 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline/promises';
 import { stdin, stdout } from 'node:process';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { recipeSchema } from './model.js';
 import { checkTools } from './media.js';
 import { prepare, record, withBrowser } from './runner.js';
 
 const rl = createInterface({ input: stdin, output: stdout });
+const cancellation = new AbortController();
+const cancel = () => cancellation.abort(new Error('Cancelled'));
+process.on('SIGINT', cancel);
+rl.on('SIGINT', () => process.emit('SIGINT'));
 async function confirm(prompt: string) {
-  if ((await rl.question(`${prompt}\nType APPROVE to continue: `)).trim() !== 'APPROVE') throw new Error('Cancelled; no approval recorded');
+  if ((await rl.question(`${prompt}\nType APPROVE to continue: `, { signal: cancellation.signal })).trim() !== 'APPROVE') throw new Error('Cancelled; no approval recorded');
 }
 async function main() {
   const [command, file, preparation] = process.argv.slice(2);
   if (command === 'doctor') {
     checkTools(); console.log(`Node ${process.version}; FFmpeg and ffprobe available. Live Canva and browser capture not checked.`); return;
   }
+  if (command === 'english-test') {
+    checkTools();
+    const recipePath = resolve(dirname(fileURLToPath(import.meta.url)), '../../recipes/english-test.json');
+    const recipe = recipeSchema.parse(JSON.parse(await readFile(recipePath, 'utf8')));
+    console.log('English feasibility test: Red Black Bold Graphic Designer Resume.');
+    console.log('First we prepare and approve the route. No recording happens during approval.');
+    console.log('Preparation opens a new design. Recording opens another; both stay in your Canva account.');
+    const prepared = await prepare(recipe, confirm);
+    console.log(`Preparation saved: ${prepared}`);
+    const folder = await record(recipe, prepared, confirm);
+    console.log(`Recording saved for your review: ${folder}`);
+    console.log('Open clip.mp4 there. Check the full search route, selected template, editor transition and text readability.');
+    return;
+  }
   if (command === 'login' || command === 'inspect') {
     await withBrowser('en', false, async (_context, page) => {
       await page.goto('https://www.canva.com/');
       console.log('Use a dedicated demo account. Never paste passwords into this terminal.');
       if (command === 'login') {
-        await rl.question('Sign in in the browser, then press Enter here to save the private local session.');
+        await rl.question('Sign in in the browser, then press Enter here to save the private local session.', { signal: cancellation.signal });
       } else {
-        await rl.question('Navigate to the screen you want to inspect, then press Enter.');
+        await rl.question('Navigate to the screen you want to inspect, then press Enter.', { signal: cancellation.signal });
         const path = resolve(file ?? 'local-inspection.json');
         const evidence = { observedAt: new Date().toISOString(), url: page.url(),
           lang: await page.locator('html').getAttribute('lang'),
@@ -43,8 +62,8 @@ async function main() {
     }
     return;
   }
-  console.log('Flow Localise — Phase 0\n\nCommands:\n  doctor\n  login\n  inspect local/evidence.json\n  validate local/recipe.json\n  prepare local/recipe.json\n  record local/recipe.json /path/to/preparation.json\n\nRun with: npm run localise -- <command>');
+  console.log('Flow Localise — Phase 0\n\nCommands:\n  doctor\n  login\n  english-test\n  inspect local/evidence.json\n  validate local/recipe.json\n  prepare local/recipe.json\n  record local/recipe.json /path/to/preparation.json\n\nRun with: npm run localise -- <command>');
 }
 try { await main(); } catch (error) {
   console.error(error instanceof Error ? error.message : 'Command failed'); process.exitCode = 1;
-} finally { rl.close(); }
+} finally { process.removeListener('SIGINT', cancel); rl.close(); }

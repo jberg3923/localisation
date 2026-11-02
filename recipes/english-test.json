@@ -1,0 +1,21 @@
+{
+  "title": "Find and open a resume template — English feasibility test",
+  "referenceLocale": "en",
+  "locale": "en-AU",
+  "startUrl": "https://www.canva.com/",
+  "accountContext": "Confirm your signed-in demo account and workspace before proceeding",
+  "uiLanguage": "en-AU",
+  "startReady": { "role": "heading", "name": "What will you Canva today?" },
+  "query": "resume",
+  "choice": {
+    "nativeTitle": "Red Black Bold Graphic Designer Resume",
+    "previewHeading": "Red Black Bold Graphic Designer Resume",
+    "editorLink": "Customise this template (opens in a new tab or window)"
+  },
+  "steps": [
+    { "id": "templates", "action": "click", "target": { "role": "link", "name": "Templates", "within": { "role": "navigation", "name": "Main menu" } }, "after": { "role": "searchbox", "name": "Search millions of templates" }, "pauseMs": 1000 },
+    { "id": "search", "action": "search", "target": { "role": "searchbox", "name": "Search millions of templates" }, "after": { "role": "button", "name": "Preview, Red Black Bold Graphic Designer Resume, template", "within": { "role": "main" } }, "pauseMs": 1500 },
+    { "id": "choose", "action": "click", "target": { "role": "button", "name": "Preview, Red Black Bold Graphic Designer Resume, template", "within": { "role": "main" } }, "after": { "role": "heading", "name": "Red Black Bold Graphic Designer Resume", "within": { "role": "dialog" } }, "pauseMs": 1500 },
+    { "id": "editor", "action": "click", "target": { "role": "link", "name": "Customise this template (opens in a new tab or window)", "within": { "role": "dialog" } }, "after": { "role": "heading", "name": "Canva editor" }, "pauseMs": 2000 }
+  ]
+}

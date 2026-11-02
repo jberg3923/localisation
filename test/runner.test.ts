@@ -5,8 +5,9 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 import { execFileSync } from 'node:child_process';
-import { choiceTarget, hash, recipeSchema, unique, validateTiming, type Recipe } from '../src/model.js';
+import { checkIdentity, hash, recipeSchema, templateIdentity, unique, validateTiming, type Recipe } from '../src/model.js';
 import { finishMedia } from '../src/media.js';
+import { adapterVersion, profile, validatePreparation } from '../src/runner.js';
 
 test('unconfigured sample cannot be approved or run', async () => {
   assert.equal(recipeSchema.safeParse(JSON.parse(await readFile('recipes/example.json', 'utf8'))).success, false);
@@ -15,6 +16,29 @@ test('unconfigured sample cannot be approved or run', async () => {
 test('recipe hash invalidates approval when the query changes', () => {
   const a = { query: 'one' } as Recipe;
   assert.notEqual(hash(a), hash({ ...a, query: 'two' }));
+});
+
+test('template identity ignores tracking but rejects replacements and foreign destinations', () => {
+  const one = templateIdentity('/design/editor/shell?create&type=TYPE&template=ASSET&analyticsCorrelationId=1', 'Resume');
+  const two = templateIdentity('/design/editor/shell?template=ASSET&type=TYPE&create&analyticsCorrelationId=2', 'Resume');
+  checkIdentity(one, two);
+  assert.throws(() => checkIdentity(one, { ...two, templateId: 'REPLACEMENT' }), /identity changed/);
+  assert.throws(() => templateIdentity('https://example.com/design/editor/shell?create&type=TYPE&template=ASSET', 'Resume'));
+  assert.throws(() => templateIdentity('/design/editor/shell?create&type=TYPE', 'Resume'));
+});
+
+test('English recipe validates and expired, future, changed, or unapproved preparations fail', async () => {
+  const recipe = recipeSchema.parse(JSON.parse(await readFile('recipes/english-test.json', 'utf8')));
+  const prepared = { adapterVersion, profile, recipeHash: hash(recipe), locale: recipe.locale,
+    identity: { templateId: 'ASSET', designType: 'TYPE', nativeTitle: recipe.choice.nativeTitle },
+    createdAt: new Date().toISOString(), choiceApproved: true, endpointAndResetHumanChecked: true };
+  validatePreparation(prepared, recipe);
+  for (const changed of [
+    { ...prepared, choiceApproved: false }, { ...prepared, adapterVersion: 1 },
+    { ...prepared, createdAt: new Date(Date.now() - 86401000).toISOString() },
+    { ...prepared, createdAt: new Date(Date.now() + 60000).toISOString() },
+    { ...prepared, recipeHash: 'changed' }
+  ]) assert.throws(() => validatePreparation(changed, recipe), /Prepare again/);
 });
 
 test('timing rejects missing, overlapping and out-of-bounds teaching steps', () => {
@@ -38,31 +62,17 @@ test('media pipeline encodes and decodes silent 1080p25 with bounded step timing
   } finally { await rm(folder, { recursive: true, force: true }); }
 });
 
-test('browser checks reject ambiguity and changed identity; recording produces valid media', async () => {
-  const browser = await chromium.launch({ headless: true });
+test('browser checks reject ambiguity and find named targets after result reordering', async () => {
+  const browser = await chromium.launch({ headless: true, executablePath: process.env.LOCALISE_TEST_CHROMIUM });
   const folder = await mkdtemp(join(tmpdir(), 'flow-localise-test-'));
   try {
     const page = await browser.newPage({ viewport: { width: 1920, height: 1080 } });
     page.setDefaultTimeout(1000);
     await page.setContent('<html lang="th"><body><h1>แม่แบบ</h1><a href="https://www.canva.com/templates/approved">Approved</a><a href="https://www.canva.com/templates/other">Other</a></body></html>');
-    const recipe = { steps: [{}, {}, { target: { role: 'link', name: 'Approved' } }], choice: { href: 'https://www.canva.com/templates/approved' } } as Recipe;
-    await choiceTarget(page, recipe);
+    await unique(page, { role: 'link', name: 'Approved' });
     await page.evaluate(() => { const a = document.querySelector('a')!; a.parentElement!.append(a); });
-    await choiceTarget(page, recipe); // identity survives reordered results
-    await page.getByRole('link', { name: 'Approved', exact: true }).evaluate(el => el.setAttribute('href', '/templates/different'));
-    await assert.rejects(choiceTarget(page, recipe), /identity changed/);
+    await unique(page, { role: 'link', name: 'Approved' });
     await page.evaluate(() => document.body.insertAdjacentHTML('beforeend', '<button>Duplicate</button><button>Duplicate</button>'));
     await assert.rejects(unique(page, { role: 'button', name: 'Duplicate' }), /Ambiguous/);
-    await page.screencast.start({ path: join(folder, 'source.webm'), size: { width: 1920, height: 1080 }, fps: 25 });
-    await page.waitForTimeout(500);
-    for (const title of ['Templates', 'Search', 'Choose', 'Editor']) {
-      await page.locator('h1').evaluate((el, value) => { el.textContent = value; }, title);
-      await page.waitForTimeout(500);
-    }
-    await page.screencast.stop();
-    const timings = ['templates', 'search', 'choose', 'editor'].map((id, i) => ({ id, startMs: 500 + i * 500, endMs: 900 + i * 500 }));
-    const media = finishMedia(folder, timings);
-    assert.equal(media.width, 1920); assert.equal(media.height, 1080);
-    assert.equal(media.fps, 25); assert.equal(media.decode, 'passed');
   } finally { await browser.close(); await rm(folder, { recursive: true, force: true }); }
 });
