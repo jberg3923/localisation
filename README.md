@@ -47,6 +47,8 @@ Use the same commands serially for Thai. Never change the shared account languag
 
 ## Capture and current limits
 
+For inspecting an editor that opens in a new tab, run `node scripts/inspect-tabs.mjs` from the project folder. After opening the editor, press Return in Terminal. This saves every readable Canva tab to `local/editor-evidence.json`, labels failures explicitly, and excludes other sites. Multi-tab inspection does **not** yet enable multi-tab production recording. The original `inspect` command captures only its original page.
+
 Pinned Playwright 1.64.1 exposes `page.screencast.start/stop`, `size` and `fps`; the installed official API definitions are used directly. Capture is 1920 × 1080 at 25 fps. FFmpeg encodes silent H.264/yuv420p and checks dimensions, rate, duration, decoding and timing bounds. Capture starts after the clean state is ready and retains the complete route without trimming. Timing uses a monotonic clock immediately after capture starts; visual alignment still needs inspection on actual footage.
 
 Only headed Chromium and same-page recording are supported in the user CLI. Unexpected tabs fail the take: this adapter cannot yet prove Canva's editor transition. Cursor decoration is currently omitted and needs a visual acceptance decision. New dialogs, duplicate targets, missing/changed templates and language mismatches stop execution. This is deliberately a narrow adapter; modal-based template flows may need explicit supported actions before a real Canva take can run.
